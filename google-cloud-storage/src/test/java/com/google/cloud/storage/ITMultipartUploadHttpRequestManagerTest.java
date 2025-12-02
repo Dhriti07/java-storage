@@ -1089,7 +1089,8 @@ public final class ITMultipartUploadHttpRequestManagerTest {
         };
 
     try (FakeHttpServer fakeHttpServer = FakeHttpServer.of(handler)) {
-      URI endpoint = URI.create(fakeHttpServer.getEndpoint() + "/");
+      MultipartUploadHttpRequestManager multipartUploadHttpRequestManager =
+          MultipartUploadHttpRequestManager.createFrom(fakeHttpServer.getHttpStorageOptions());
 
       ListMultipartUploadsRequest request =
           ListMultipartUploadsRequest.builder()
@@ -1100,7 +1101,7 @@ public final class ITMultipartUploadHttpRequestManagerTest {
               .build();
 
       ListMultipartUploadsResponse response =
-          multipartUploadHttpRequestManager.sendListMultipartUploadsRequest(endpoint, request);
+          multipartUploadHttpRequestManager.sendListMultipartUploadsRequest(request);
 
       assertThat(response).isNotNull();
       assertThat(response.getBucket()).isEqualTo("test-bucket");
@@ -1125,14 +1126,15 @@ public final class ITMultipartUploadHttpRequestManagerTest {
         };
 
     try (FakeHttpServer fakeHttpServer = FakeHttpServer.of(handler)) {
-      URI endpoint = URI.create(fakeHttpServer.getEndpoint() + "/");
+      MultipartUploadHttpRequestManager multipartUploadHttpRequestManager =
+          MultipartUploadHttpRequestManager.createFrom(fakeHttpServer.getHttpStorageOptions());
       ListMultipartUploadsRequest request =
           ListMultipartUploadsRequest.builder().bucket("test-bucket").build();
 
       assertThrows(
           HttpResponseException.class,
           () ->
-              multipartUploadHttpRequestManager.sendListMultipartUploadsRequest(endpoint, request));
+              multipartUploadHttpRequestManager.sendListMultipartUploadsRequest(request));
     }
   }
 }
